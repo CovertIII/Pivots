@@ -1,0 +1,33 @@
+Objects:
+	Start
+		x,y
+	End
+		x,y
+	Cursor
+		x,y
+		pivot_id;
+	pivots
+		moved;
+		x,y
+		th(horizontal or vertical)
+	lines
+		x1,y1
+		x2,y2
+	boundary
+		x,y
+
+Public functions for game mode:
+	int request_move_cursor(x,y)
+	int request_pivot(th)
+	int request_pick_drop_pivot(void)
+	vi2 pos_start(void);
+	vi2 pos_end(void);
+	vi2 pos_cursor(void);
+	int num_pivot(void);
+	vi2 pos_pivot(int i);
+	int num_line(void);
+	vi2 pos_line(int i, int point);
+	int declare_win(void);
+	void undo_move(void);
+	void redo_move(void);
+	void restart(void);
