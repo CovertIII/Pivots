@@ -8,7 +8,7 @@
 #define SCALE 1.0f/15.0f  //Size in pixels of the snake body squares
 #define sc_width 600
 #define sc_height 600
-#define TIMERMSECS 10
+#define TIMERMSECS 100
 
 
 int lastFrameTime = 0;
@@ -62,7 +62,8 @@ void init(void)
 }
 void calc(int value)
 {
-	//left blank on purpose
+	glutTimerFunc(TIMERMSECS, calc, 0);
+	glutPostRedisplay();
 }
 
 void render(void)
@@ -123,19 +124,40 @@ void render(void)
 		glVertex2f (end.x*cell,end.y*cell);
 	  glEnd();
 	}
-	glLineWidth(1.0);
 	
-	glColor3f (0.2, 0.2 ,0.2);
+	
+	
 	for(i=0; i<pivots.num_pivot(); i++)
 	{
 		start = pivots.pos_pivot(i);
+		glColor3f (0.2, 0.2 ,0.2);
 		circle(start.x*cell, start.y*cell, cell*0.5*0.3);
+		glLineWidth(2.0);
+		glColor3f (1,1,1);
+		if(pivots.dir_pivot(i))
+		{
+			glBegin(GL_LINES);
+			glVertex2f (start.x*cell, start.y*cell + cell*0.5*0.3);
+			glVertex2f (start.x*cell, start.y*cell - cell*0.5*0.3);
+		  glEnd();
+		}
+		else
+		{
+			glBegin(GL_LINES);
+			glVertex2f (start.x*cell + cell*0.5*0.3, start.y*cell);
+			glVertex2f (start.x*cell - cell*0.5*0.3, start.y*cell);
+		  glEnd();
+		}	
 	}
 	
-	glColor3f (0.3, 0.5,0.7);
+	if(pivots.grasp_cursor())
+		{glColor3f (0.8, 0.7, 0);}
+	else
+		{glColor3f (0.3, 0.5,0.7);}
 	scale = cell*0.22;
 	end = pivots.pos_cursor();
 	square(end.x*cell - scale*0.5, end.y*cell - scale*0.5, scale);
+	glLineWidth(1.0);
 	glPopMatrix();
 	glutSwapBuffers();
 	
@@ -153,15 +175,18 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 		case 27:
 			exit(0);
 			break;
-		case 'P':
-		case 'p':
-			
+		case 'D':
+		case 'd':
+			pivots.request_pick_drop_pivot();
 			break;
-		case 'R':
-		case 'r':
-			
+		case 'A':
+		case 'a':
+			pivots.request_pivot(1);
 			break;
-			
+		case 'S':
+		case 's':
+    	pivots.request_pivot(-1);
+			break;	
 		default:
 			break;
 	}
@@ -171,16 +196,16 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 void pressKey(int key, int xx, int yy) {
 	switch(key) {
 		case GLUT_KEY_LEFT : 
-			
+			pivots.request_move_cursor(-1,0);
 			break;
 		case GLUT_KEY_RIGHT : 
-			
+			pivots.request_move_cursor(1,0);
 			break;
 		case GLUT_KEY_UP : 
-			
+			pivots.request_move_cursor(0,1);
 			break;
 		case GLUT_KEY_DOWN : 
-			
+			pivots.request_move_cursor(0,-1);
 			break;
 	}
 }
@@ -209,6 +234,7 @@ int main(int argc, char **argv)
 	
 	init();
 	
+	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
 
