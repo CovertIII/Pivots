@@ -1,0 +1,9 @@
+PIVOTS
+
+This is a liitle puzzle game I am working on. Made using GLUT.
+
+INSTALLING
+Currently it is set up to build on Mac OS X.  Have to change the makefile if you want to build on a different system.
+
+PLAYING
+look at main.cpp to see what you can do.  I am too lazy to write anything useful at the moment
