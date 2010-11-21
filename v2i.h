@@ -3,6 +3,9 @@
 #include <cstddef>
 #include <limits>
 
+//These functions were taken from the b2Math.h file of the Box2D project and then rename and tweaked for my purposed
+
+
 /// A 2D column vector.
 struct v2i
 {

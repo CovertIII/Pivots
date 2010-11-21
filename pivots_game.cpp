@@ -33,6 +33,7 @@ bool pivots_game::load_file(char *location)
 		{
 			fscanf(loadFile,"%d %d", &line[i].pt1.x, &line[i].pt1.y);
 			fscanf(loadFile,"%d %d", &line[i].pt2.x, &line[i].pt2.y);
+			line[i].pivot = 0;
 		}
 		return true;
 	}
@@ -79,10 +80,7 @@ int pivots_game::request_move_cursor(int _x, int _y)
 }
 
 int pivots_game::request_pivot(int dir)
-{
-	// 0 -1  90 degree rotation matrix
-	// 1  0
-	
+{	
 	/*there needs to be a series of tests to see if the line can pivot.
 			1. Is the pivot direction the different than the line direction? if so don't pivot
 			2. Is there more than one pivot on the line?  if so don't pivot
@@ -96,6 +94,7 @@ int pivots_game::request_pivot(int dir)
 	*/
 	int i, k, j;
 	bool turn_test = true;
+	bool turn_pivot = true;
 	if (!cursor.grasp)
 	{
 		//check to see which pivot you are on
@@ -108,45 +107,81 @@ int pivots_game::request_pivot(int dir)
 				{
 					if (point_on_line(line[k], pivot[i].Get()))
 					{
-						//1. Is there more than one pivot on the line?  if so don't pivot
+						//Set the cursors pivot_id to the pivot it is on
+						cursor.pivot_id = i;
+						
+						//1. Is the pivot direction the different than the line direction? if so don't pivot
+						if(line[k].direction() != pivot[i].dir)
+							{turn_test = false;}
+						
+						//2. Is there more than one pivot on the line?  if so don't pivot
 						for (j=0; j<pivot_num; j++)
 						{
 							if(point_on_line(line[k], pivot[j].Get()) && i != j)
 								{turn_test = false;}
 						}
 						
-						//2. Is the line currently interseting another line?  ditto
+						//3. Is the line currently interseting another line?  ditto
 						for (j=0; j<line_num; j++)
 						{
 							if(line_in_line(line[k], line[j]) && k != j)
 								{turn_test = false;}
 						}
-						//then do (pt - pivot)trans + pivot = pt
-						//to rotate line
-						v2i m1 (0 , -1*dir);
-						v2i m2 (1*dir , 0);
-						v2i rot1 (v2iDot((line[k].pt1 - pivot[i].Get()),m1), v2iDot((line[k].pt1 - pivot[i].Get()),m2));
-						v2i rot2 (v2iDot((line[k].pt2 - pivot[i].Get()),m1), v2iDot((line[k].pt2 - pivot[i].Get()),m2));
-						m1 = pivot[i].Get() + rot1;
-						m2 = pivot[i].Get() + rot2;
-					
-						if(check_bound(m1) && check_bound(m2))
-						{
-							line[k].pt1 = m1;
-							line[k].pt2 = m2;
-							(pivot[i].dir == 0) ? (pivot[i].dir = 1) : (pivot[i].dir = 0);
+						
+						//get the points of the rotated line for further tests
+						v2i pt1 = turn(pivot[i].Get(), line[k].pt1, dir);
+						v2i pt2 = turn(pivot[i].Get(), line[k].pt2, dir);
+						LINE temp;
+						temp.pt1 = pt1;
+						temp.pt2 = pt2;
+						
+						//4. In the processes of pivoting would the line "hit" another line? ditto
+						for (j=0; j<line_num; j++)
+						{							
+							if ((in_arc_test(pivot[i].Get(), line[k].pt1, temp.pt1, line[j].pt1, dir) && j!=k) ||
+									(in_arc_test(pivot[i].Get(), line[k].pt2, temp.pt2, line[j].pt1, dir) && j!=k) ||
+									(in_arc_test(pivot[i].Get(), line[k].pt1, temp.pt1, line[j].pt2, dir) && j!=k) ||
+									(in_arc_test(pivot[i].Get(), line[k].pt2, temp.pt2, line[j].pt2, dir) && j!=k))
+									{
+										turn_test = false;
+									}						
 						}
+						
+						//5. Will the line pivot out of bounds? ditto
+						if(!check_bound(pt1) || !check_bound(pt2))
+						{
+							{turn_test = false;}
+						}
+						
+						//7. Will the line be interseting another line (other than an end point)? ditto
+						for (j=0; j<line_num; j++)
+						{
+							if(line_in_line(temp, line[j]) && k != j)
+								{turn_test = false;}
+						}
+												
 						//if all tests past then set pivot to 1 in the line.
 						//at the most we'll only be pivoting one line
 						if(turn_test)
+							{line[k].pivot=true;}
 					}
 				}
 				
-				//was thinking here would actually turn the lines
-				
+				//was thinking here would actually turn the lines and pivot
 				for (k=0; k<line_num; k++)
-			
-				
+				{
+					if(line[k].pivot)
+					{
+						if(turn_pivot)
+						{
+							(pivot[cursor.pivot_id].dir == 0) ? (pivot[cursor.pivot_id].dir = 1) : (pivot[cursor.pivot_id].dir = 0);
+							turn_pivot = false;
+						}
+						line[k].pivot = false;
+						line[k].pt1 = turn(pivot[cursor.pivot_id].Get(), line[k].pt1, dir);
+						line[k].pt2 = turn(pivot[cursor.pivot_id].Get(), line[k].pt2, dir);
+					}
+				}
 			}
 		}
 	}
@@ -416,4 +451,37 @@ bool pivots_game::line_in_line(LINE line_1, LINE line_2)
 		}
 	}
 	return test;
+}
+
+v2i pivots_game::turn(v2i ref, v2i pt, int dir)
+{
+	//set up the 90 degree rotation matrix
+	v2i m1 (0 , -1*dir);
+	v2i m2 (1*dir , 0);
+	//do the matrix transformation:
+	//move the point to the origin with resepct to the reference point then rotate it
+	v2i rot (v2iDot((pt - ref),m1), v2iDot((pt - ref),m2));
+	//then move the point back to where it was with recept to the reference point and return the value
+	return ref + rot;
+}
+
+bool pivots_game::in_arc_test(v2i ref, v2i origin, v2i turn, v2i test, int dir)
+{
+	origin -= ref;
+	turn -= ref;
+	test -= ref;
+	
+	bool return_val = false;
+	if(turn.LengthSquared() > test.LengthSquared())
+	{
+		double th_origin = atan2(origin.y, origin.x);
+		double th_turn = atan2(turn.y, turn.x);
+		double th_test = atan2(test.y, test.x);
+		
+		if(th_turn - th_origin > th_test - th_origin && dir == 1)
+			{return_val = true;}
+		else if (th_origin - th_turn > th_test - th_turn && dir == -1)
+			{return_val = true;}
+	}
+	return return_val;
 }

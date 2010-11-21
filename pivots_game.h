@@ -40,6 +40,8 @@ protected:
 	PIVOT pivot[100];
 	int line_num;
 	LINE line[100];
+	v2i turn(v2i ref, v2i pt, int dir);
+	bool in_arc_test(v2i ref, v2i orgin, v2i turn, v2i test, int dir);
 	bool point_on_line(LINE _line, v2i _p);
 	bool point_on_middle_line(LINE _line, v2i _p);
 	bool line_in_line(LINE line_1, LINE line_2);
