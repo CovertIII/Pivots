@@ -11,6 +11,7 @@
 #define TIMERMSECS 100
 
 
+char *level;
 int lastFrameTime = 0;
 float timecheck = 0;
 
@@ -81,7 +82,7 @@ void render(void)
 	glClearColor (0.8, 0.9,0.9,0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	//Displays Boundaries
+	//Displays Boundaries and a grid
 	glPushMatrix();
 	glTranslatef(margin, margin, 0);
 	glColor3f (0.6, 0.7,0.7);
@@ -100,16 +101,19 @@ void render(void)
 	  glEnd();
 	}
 	
+	//Displays Start 
 	glColor3f (0.4, 1.0 ,0.5);
 	float scale = cell*0.3;
 	v2i start = pivots.pos_start();
 	square(start.x*cell - scale*0.5, start.y*cell - scale*0.5, scale);
 	
+	
+	//Displays End
 	glColor3f (1.0, 0.4 ,0.5);
 	v2i end = pivots.pos_end();
 	square(end.x*cell - scale*0.5, end.y*cell - scale*0.5, scale);
 	
-	
+	//Displays a the lines
 	glLineWidth(3.0);
 	glColor3f (0.4, 0.4 ,0.4);
 	scale = cell*0.2;
@@ -127,11 +131,13 @@ void render(void)
 	
 	
 	
+	//Displays a the pivots
 	for(i=0; i<pivots.num_pivot(); i++)
 	{
 		start = pivots.pos_pivot(i);
 		glColor3f (0.2, 0.2 ,0.2);
 		circle(start.x*cell, start.y*cell, cell*0.5*0.3);
+		//Displays a the direction of the pivot 0 for horizontal and 1 for vertical
 		glLineWidth(2.0);
 		glColor3f (1,1,1);
 		if(pivots.dir_pivot(i))
@@ -150,6 +156,7 @@ void render(void)
 		}	
 	}
 	
+	//Displays the cursor, checks to see if the cursor has a pivot, if it does its color is yellow, if not, blue.
 	if(pivots.grasp_cursor())
 		{glColor3f (0.8, 0.7, 0);}
 	else
@@ -158,9 +165,10 @@ void render(void)
 	end = pivots.pos_cursor();
 	square(end.x*cell - scale*0.5, end.y*cell - scale*0.5, scale);
 	glLineWidth(1.0);
-	glPopMatrix();
-	glutSwapBuffers();
 	
+	glPopMatrix();
+	
+	glutSwapBuffers();
 	glFlush();
 }
 
@@ -187,6 +195,10 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 		case 's':
     	pivots.request_pivot(-1);
 			break;	
+		case 'R':
+		case 'r':
+			pivots.load_file(level);
+			break;
 		default:
 			break;
 	}
@@ -226,7 +238,8 @@ void idle(void)
 
 int main(int argc, char **argv)
 {
-	pivots.load_file(argv[1]);
+	level = argv[1];
+	pivots.load_file(level);
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
   glutInitWindowSize(sc_width, sc_height);

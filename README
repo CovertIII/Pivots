@@ -1,9 +1,23 @@
 PIVOTS
+======
+This is a little puzzle game I am working on. It is made using GLUT.
 
-This is a liitle puzzle game I am working on. Made using GLUT.
 
 INSTALLING
-Currently it is set up to build on Mac OS X.  Have to change the makefile if you want to build on a different system.
+==========
+Currently it is set up to build on Mac OS X.  You have to change the makefile to the correct links if you want to build on a different system.  On a linux system you'll need the freeglut3 developer library and the library itself.  On windows, look into MinGW to compile a GLUT program.
+
 
 PLAYING
-look at main.cpp to see what you can do.  I am too lazy to write anything useful at the moment
+=======
+Start the game from the command line.  You must provide a file to load for level when you start it up.  (Ex: $ ./pivots levels/lvl1.piv)  The file you load is a text file describing the contents of the level.  
+
+After the game has loaded you will notice a grid and on top of it various lines, circles, and boxes.  You control a blue box called the cursor.  The goal is to move the cursor from the green box, the start, to the red box, the end.  The cursor can only move on the gray lines.  The gray boxes indicate the start or end of a line segment.  The circles indicate pivots which are used to rotate or pivot the lines.  These pivots can be moved on the line they are on, so long as their direction is aligned with the line's direction.  This direction is indicated by the white line on the pivot.  So, you move pivots and rotate lines so you can get the cursor to the end.
+
+ o Move the cursor with the arrow keys.
+ o Pickup a pivot by putting the cursor on top of it and push 'd'. Your cursor will turn yellow indicating you are grasping a pivot.
+ o Drop a pivot where you want it by moving to the position you desire it to be and push 'd' again.  Your cursor will turn back to blue.
+ o Pivot a line clockwise by moving on a pivot and pushing 's'.
+ o Pivot a line counter-clockwise by moving on a pivot and pushing 'a'.
+
+That's it! Have fun and try making some levels by looking in the levels folder.
