@@ -1,16 +1,17 @@
 PIVOTS
 ======
 This is a little puzzle game I am working on. It is made using GLUT.
+November 24, 2010.  
 
 
 INSTALLING
 ==========
-Currently it is set up to build on Mac OS X.  You have to change the makefile to the correct links if you want to build on a different system.  On a linux system you'll need the freeglut3 developer library and the library itself.  On windows, look into MinGW to compile a GLUT program.
+Currently it is set up to build on Mac OS X.  You have to change the makefile to the correct links if you want to build on a different system.  On a linux system you'll need the freeglut3 developer library and the library itself.  On windows, look into MinGW to compile GLUT programs.
 
 
 PLAYING
 =======
-Start the game from the command line.  You can optionally provide a file to load for level when you start it up.  (Ex: $ ./pivots lvl1.piv)  The file you load is a text file describing the contents of the level.  
+Start the game from the command line. (Ex: $ ./pivots)  If you don't start from the command line (ex: double click from finder), the levels won't load.  You can optionally provide a file to load for a level when you start the game.  (Ex: $ ./pivots ./levels/lvl1.piv).  The file you load is a text file describing the contents of the level.  See the levels section for more details.
 
 After the game has loaded you will notice a grid and on top of it various lines, circles, and boxes.  You control a blue box called the cursor.  The goal is to move the cursor from the green box, the start, to the red box, the end.  The cursor can only move on the gray lines.  The gray boxes indicate the start or end of a line segment.  The circles indicate pivots which are used to rotate or pivot the lines.  These pivots can be moved on the line they are on, so long as their direction is aligned with the line's direction.  This direction is indicated by the white line on the pivot.  So, you move pivots and rotate lines so you can get the cursor to the end.
 
@@ -20,4 +21,25 @@ After the game has loaded you will notice a grid and on top of it various lines,
  o Pivot a line clockwise by moving on a pivot and pushing 's'.
  o Pivot a line counter-clockwise by moving on a pivot and pushing 'a'.
 
-That's it! Have fun and try making some levels by looking in the levels folder.
+
+LEVELS
+======
+If your adventurous try making you own levels!  Here's a sample level file with comments on what the numbers mean:
+
+billy     // author of the level, don't include spaces
+9 9       // width and height of the level
+3 4       // location of the starting point
+8 8 			// location of the end point
+2 				// number of pivots
+9 5 1 		// location of pivot, the third number is its direction  
+3 5 1 		// another pivot
+3					// number of lines
+9 3 9 6   // location of start and end point of the line
+7 3 5 3   // another line
+3 3 3 6		// another line
+
+When you make a level don't include the comments.  Look at the levels directory for more examples of levels
+
+CONCLUSION
+==========
+That's it! Have fun.
