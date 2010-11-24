@@ -276,6 +276,13 @@ v2i pivots_game::pos_line_pt2(int i)
 	return line[i].pt2.Get();
 }
 
+bool pivots_game::declare_win(void)
+{
+	if(cursor == end)
+		{return true;}
+	else
+		{return false;}
+}
 
 //function tests whether a given point is on a given line segment.
 // you would think there is a more efficent way...
@@ -478,10 +485,10 @@ bool pivots_game::in_arc_test(v2i ref, v2i origin, v2i turn, v2i test, int dir)
 		double th_turn = atan2(turn.y, turn.x);
 		double th_test = atan2(test.y, test.x);
 		
-		if(th_turn - th_origin > th_test - th_origin && dir == 1)
+		if(dir == 1 && th_test < th_turn && th_test > th_origin)
 			{return_val = true;}
-		else if (th_origin - th_turn > th_test - th_turn && dir == -1)
-			{return_val = true;}
+		else if (dir == -1 && th_test > th_turn && th_test < th_origin)
+			{return_val = true;}	
 	}
 	return return_val;
 }

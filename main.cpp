@@ -11,7 +11,8 @@
 #define TIMERMSECS 100
 
 
-char *level;
+char level[255];
+int lvl = 1;
 int lastFrameTime = 0;
 float timecheck = 0;
 
@@ -54,12 +55,15 @@ void renderBitmapString(float x, float y, void *font, char *string)
 	glPopMatrix();
 }
 
-void init(void)
+void init(int argc, char **argv)
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glShadeModel(GL_FLAT);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
+	
+	sprintf(level, "./levels/lvl%d.piv", lvl);
+	pivots.load_file(level);
 }
 void calc(int value)
 {
@@ -70,6 +74,7 @@ void calc(int value)
 void render(void)
 {
 	int i,k;
+	char buf[255];
 	int w_width = glutGet(GLUT_WINDOW_WIDTH);
 	int w_height = glutGet(GLUT_WINDOW_HEIGHT);
 	v2i boundary = pivots.get_bound();
@@ -166,6 +171,17 @@ void render(void)
 	square(end.x*cell - scale*0.5, end.y*cell - scale*0.5, scale);
 	glLineWidth(1.0);
 	
+	//Tells you if you've won and to advance to then next level
+	if(pivots.declare_win())
+	{
+		glColor3f (0.2, 0.2 ,0.2);
+		sprintf(buf, "You Win! To advance to level %d.", lvl+1);
+		glPushMatrix();
+		glLoadIdentity();
+		renderBitmapString(glutGet(GLUT_WINDOW_WIDTH)/2, glutGet(GLUT_WINDOW_HEIGHT)/2, GLUT_BITMAP_TIMES_ROMAN_24, buf);
+		glPopMatrix();
+	}
+	
 	glPopMatrix();
 	
 	glutSwapBuffers();
@@ -199,6 +215,14 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 		case 'r':
 			pivots.load_file(level);
 			break;
+		case 'L':
+		case 'l':
+			if(pivots.declare_win())
+			{
+				lvl++;
+				sprintf(level, "levels/lvl%d.piv", lvl);
+				pivots.load_file(level);
+			}
 		default:
 			break;
 	}
@@ -238,14 +262,12 @@ void idle(void)
 
 int main(int argc, char **argv)
 {
-	level = argv[1];
-	pivots.load_file(level);
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
   glutInitWindowSize(sc_width, sc_height);
   glutCreateWindow("Pivots");
 	
-	init();
+	init(argc, argv);
 	
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);

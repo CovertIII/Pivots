@@ -21,7 +21,7 @@ public:
 	int num_line(void);
 	v2i pos_line_pt1(int i);
 	v2i pos_line_pt2(int i);
-	int declare_win(void);
+	bool declare_win(void);
 	void get_author(char *s);
 	
 	//for undo and redo keep a list of the command executed and succeeded
@@ -46,5 +46,6 @@ protected:
 	bool point_on_middle_line(LINE _line, v2i _p);
 	bool line_in_line(LINE line_1, LINE line_2);
 	int fsign(int i);
+	double add_2pi(double ang);
 	bool check_bound(v2i pt);
 };
