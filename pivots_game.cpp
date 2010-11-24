@@ -153,12 +153,25 @@ int pivots_game::request_pivot(int dir)
 							{turn_test = false;}
 						}
 						
+						//6. Will line share more than one point with another line? ditto
+						for (j=0; j<line_num; j++)
+						{
+							if(((point_on_middle_line(line[j], temp.pt1) && point_on_middle_line(temp, line[j].pt1)) ||
+								 (point_on_middle_line(line[j], temp.pt1) && point_on_middle_line(temp, line[j].pt2)) ||
+								 (point_on_middle_line(line[j], temp.pt2) && point_on_middle_line(temp, line[j].pt1)) || 
+								 (point_on_middle_line(line[j], temp.pt2) && point_on_middle_line(temp, line[j].pt2))) && 
+								 j != k)
+								{turn_test = false;}
+						}
+						
+						
 						//7. Will the line be interseting another line (other than an end point)? ditto
 						for (j=0; j<line_num; j++)
 						{
 							if(line_in_line(temp, line[j]) && k != j)
 								{turn_test = false;}
 						}
+						
 												
 						//if all tests past then set pivot to 1 in the line.
 						//at the most we'll only be pivoting one line
@@ -485,10 +498,16 @@ bool pivots_game::in_arc_test(v2i ref, v2i origin, v2i turn, v2i test, int dir)
 		double th_turn = atan2(turn.y, turn.x);
 		double th_test = atan2(test.y, test.x);
 		
+		if (dir == -1 && th_turn + 0.1 > M_PI && th_turn - 0.1 < M_PI)
+			{th_turn -= M_PI*2;}
+		else if (dir == 1 && th_origin + 0.1 > M_PI && th_origin - 0.1 < M_PI)
+			{th_origin -= M_PI*2;}
+		
 		if(dir == 1 && th_test < th_turn && th_test > th_origin)
 			{return_val = true;}
 		else if (dir == -1 && th_test > th_turn && th_test < th_origin)
-			{return_val = true;}	
+			{return_val = true;}
+		
 	}
 	return return_val;
 }

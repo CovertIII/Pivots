@@ -21,7 +21,14 @@ pivots_game pivots;
 
 void square(int x, int y, float scale){
 	glPushMatrix();
+	glLineWidth(2.0);
 	glTranslatef(x,y,0);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(0,0);
+	glVertex2f(scale,0);
+	glVertex2f(scale,scale);
+	glVertex2f(0,scale);
+  glEnd();
 	glBegin(GL_POLYGON);
 	glVertex2f(0,0);
 	glVertex2f(scale,0);
@@ -33,13 +40,19 @@ void square(int x, int y, float scale){
 
 void circle(float pos_x, float pos_y, float size) {
 	glPushMatrix();
+	glLineWidth(2.0);
 	glTranslatef(pos_x,pos_y,0);
 	float counter;
+	glBegin(GL_LINE_LOOP);
+	for (counter = 0; counter <= 2*3.14159; counter = counter + 3.14159/8) {
+		glVertex3f ((size)*cos(counter), (size)*sin(counter), 0.0);
+	}
+  glEnd();
 	glBegin(GL_POLYGON);
 	for (counter = 0; counter <= 2*3.14159; counter = counter + 3.14159/8) {
 		glVertex3f ((size)*cos(counter), (size)*sin(counter), 0.0);
 	}
-    glEnd();
+  glEnd();
 	glPopMatrix();
 }
 
@@ -59,11 +72,22 @@ void init(int argc, char **argv)
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glShadeModel(GL_FLAT);
+	//glShadeModel(GL_FLAT);
+	glEnable(GL_POINT_SMOOTH);
+	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_POLYGON_SMOOTH);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	
-	sprintf(level, "./levels/lvl%d.piv", lvl);
-	pivots.load_file(level);
+	if (argc > 1)
+	{
+		sprintf(level, "./levels/%s", argv[1]);
+		pivots.load_file(level);
+	}
+	else
+	{
+		sprintf(level, "./levels/lvl%d.piv", lvl);
+		pivots.load_file(level);
+	}
 }
 void calc(int value)
 {
@@ -98,7 +122,7 @@ void render(void)
 		glVertex2f (i*cell,p_height);
 	  glEnd();
 	}
-	for(i=0; i <= boundary.x; i++)
+	for(i=0; i <= boundary.y; i++)
 	{
 		glBegin(GL_LINES);
 		glVertex2f (0,i*cell);
@@ -119,7 +143,6 @@ void render(void)
 	square(end.x*cell - scale*0.5, end.y*cell - scale*0.5, scale);
 	
 	//Displays a the lines
-	glLineWidth(3.0);
 	glColor3f (0.4, 0.4 ,0.4);
 	scale = cell*0.2;
 	for(i=0; i<pivots.num_line(); i++)
@@ -128,6 +151,7 @@ void render(void)
 		end = pivots.pos_line_pt2(i);
 		square(start.x*cell - scale*0.5, start.y*cell - scale*0.5, scale);
 		square(end.x*cell - scale*0.5, end.y*cell - scale*0.5, scale);
+		glLineWidth(3.0);
 		glBegin(GL_LINES);
 		glVertex2f (start.x*cell,start.y*cell);
 		glVertex2f (end.x*cell,end.y*cell);
@@ -174,11 +198,11 @@ void render(void)
 	//Tells you if you've won and to advance to then next level
 	if(pivots.declare_win())
 	{
-		glColor3f (0.2, 0.2 ,0.2);
-		sprintf(buf, "You Win! To advance to level %d.", lvl+1);
+		glColor3f (0, 0 ,0);
+		sprintf(buf, "You Win! Press `L' to advance to level %d.", lvl+1);
 		glPushMatrix();
 		glLoadIdentity();
-		renderBitmapString(glutGet(GLUT_WINDOW_WIDTH)/2, glutGet(GLUT_WINDOW_HEIGHT)/2, GLUT_BITMAP_TIMES_ROMAN_24, buf);
+		renderBitmapString(90, glutGet(GLUT_WINDOW_HEIGHT)/2, GLUT_BITMAP_HELVETICA_18, buf);
 		glPopMatrix();
 	}
 	
@@ -269,7 +293,6 @@ int main(int argc, char **argv)
 	
 	init(argc, argv);
 	
-	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
 

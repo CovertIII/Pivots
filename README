@@ -10,7 +10,7 @@ Currently it is set up to build on Mac OS X.  You have to change the makefile to
 
 PLAYING
 =======
-Start the game from the command line.  You can optionally provide a file to load for level when you start it up.  (Ex: $ ./pivots levels/lvl1.piv)  The file you load is a text file describing the contents of the level.  
+Start the game from the command line.  You can optionally provide a file to load for level when you start it up.  (Ex: $ ./pivots lvl1.piv)  The file you load is a text file describing the contents of the level.  
 
 After the game has loaded you will notice a grid and on top of it various lines, circles, and boxes.  You control a blue box called the cursor.  The goal is to move the cursor from the green box, the start, to the red box, the end.  The cursor can only move on the gray lines.  The gray boxes indicate the start or end of a line segment.  The circles indicate pivots which are used to rotate or pivot the lines.  These pivots can be moved on the line they are on, so long as their direction is aligned with the line's direction.  This direction is indicated by the white line on the pivot.  So, you move pivots and rotate lines so you can get the cursor to the end.
 
