@@ -1,0 +1,24 @@
+I want to create an application that can be used to create and edit pivot files.
+
+BUFFERS
+=======
+It will have three different buffers that it will use:
+	1. save buffer
+	2. workspace buffer
+	3. backup buffer
+
+The workspace buffer is will will always be displayed on the screen.  The changes you make on it may or may not be occur on the save buffer. When you are in edit mode the changes you make will also change the save buffer.  When you are in game mode the changes will not be effect the save buffer, only the workspace buffer.  So you could create a pivots level, make some changes to it, go in game mode to see what those changes will be like (which will change the workspace buffer, but not the save buffer), make more changes to the file based on what it looks like from how you changed it in game mode which will save to the save buffer.  If you want to see how the file will look like when you will load it in the game you enter :sw when you are in command mode; the workspace will then get saved to the backup buffer.  If you want to switch your workspace to how you left off push :bw when you are in command mode.  
+
+
+MODES
+=====
+There will be three different modes the editor can be in:
+	1. Edit Mode (default)
+		Graphically edit the workspace and start buffer at the same time.
+	2. Command mode
+		Enter in commands that will load different buffers into workspace buffer, change the buffers, or save or load your file.  To leave
+		without executing a command push <esc>.  To execute your command push <cr>.
+	3. Game mode
+		Try out your level you have been editing to see what it will feel like.  It will only change the workspace buffer not the start
+		buffer.
+		

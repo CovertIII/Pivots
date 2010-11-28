@@ -1,0 +1,19 @@
+void square(int x, int y, float scale)
+{
+	glPushMatrix();
+	glLineWidth(2.0);
+	glTranslatef(x,y,0);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(0,0);
+	glVertex2f(scale,0);
+	glVertex2f(scale,scale);
+	glVertex2f(0,scale);
+  glEnd();
+	glBegin(GL_POLYGON);
+	glVertex2f(0,0);
+	glVertex2f(scale,0);
+	glVertex2f(scale,scale);
+	glVertex2f(0,scale);
+    glEnd();
+	glPopMatrix();
+}

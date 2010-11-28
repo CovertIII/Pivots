@@ -1,9 +1,7 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <stdlib.h> #include <stdio.h> #include <string.h>
 #include <math.h>
 #include <GLUT/glut.h>
-#include "pivots_game.h"
+#include "pivots_editor.h"
 
 #define SCALE 1.0f/15.0f  //Size in pixels of the snake body squares
 #define sc_width 600
@@ -57,7 +55,7 @@ void circle(float pos_x, float pos_y, float size) {
 }
 
 void renderBitmapString(float x, float y, void *font, char *string) 
-{
+{  
 	glPushMatrix();
 	glLoadIdentity();
 	char *c;
@@ -233,7 +231,7 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 			break;
 		case 'S':
 		case 's':
-    	pivots.request_pivot(-1);
+    		pivots.request_pivot(-1);
 			break;	
 		case 'R':
 		case 'r':
@@ -270,10 +268,152 @@ void pressKey(int key, int xx, int yy) {
 	}
 }
 
+
+void mouseButton(int bbutton, int sstate, int xx, int yy){
+	
+	int i,j,h;
+	if(sstate == 1 && create == TRUE){
+		floater[particle_num].p.x = mouse.x;
+		floater[particle_num].p.y = mouse.y;
+		floater[particle_num].v.x = 0;
+		floater[particle_num].v.y = 0;
+		floater[particle_num].f.x = 0;
+		floater[particle_num].f.y = 0;
+		floater[particle_num].m = 1;
+		
+		for(i=0; i<particle_num; i++){
+			connect[particle_num][i] = 0;
+			connect[i][particle_num] = 0;
+		}
+		
+		particle_num++;
+		
+	}
+	if(sstate == 1 && spring == TRUE){
+		
+		if(pp1 < 0){
+			for(i=0; i<particle_num; i++){
+				if(v2Len(v2Sub(mouse, floater[i].p))<crad+20){
+					p1 = floater[i].p;
+					pp1 = i;
+					i = particle_num;
+				}
+			}
+		}
+		
+		if(pp2 < 0 && pp1 >= 0){
+			//attach the particles
+			for(i=0; i<particle_num; i++){
+				if(v2Len(v2Sub(mouse, floater[i].p))<crad+20 && pp1 != i){
+					p2 = floater[i].p;
+					pp2 = i;
+					
+					if(connect[pp1][pp2] && connect[pp2][pp1]){
+						connect[pp1][pp2]=0;
+						connect[pp2][pp1]=0;
+					}
+					else{
+						connect[pp1][pp2]=1;
+						connect[pp2][pp1]=1;
+					}
+					
+					i = particle_num;
+					p1.x = -10;
+					p1.y = -10;
+					p2.x = -10;
+					p2.y = -10;
+					pp1 = -10;
+					pp2 = -10;
+				}
+				
+			}
+		}
+		
+	}
+	if(sstate == 1 && nail == TRUE){
+		int space = TRUE;
+		for(i=0; i<particle_num; i++){
+			if(v2Len(v2Sub(mouse, floater[i].p))<crad+20){
+				space = FALSE;
+				if(floater[i].m< 1000000000){
+					floater[i].m=1000000000;
+					floater[i].v.x=0;
+					floater[i].v.y=0;
+				}
+				else{floater[i].m=1;}	
+				i = particle_num;
+			}
+		}
+		if(space){
+			floater[particle_num].p.x = mouse.x;
+			floater[particle_num].p.y = mouse.y;
+			floater[particle_num].v.x = 0;
+			floater[particle_num].v.y = 0;
+			floater[particle_num].f.x = 0;
+			floater[particle_num].f.y = 0;
+			floater[particle_num].m = 1000000000;
+			
+			for(i=0; i<particle_num; i++){
+				connect[particle_num][i] = 0;
+				connect[i][particle_num] = 0;
+			}
+			
+			particle_num++;
+		}
+		
+	}
+	
+	if((sstate == GLUT_DOWN) && (destroy)){
+		for(i=0; i<particle_num; i++){
+			if(v2Len(v2Sub(mouse, floater[i].p))<crad+20){
+				for(j=i;j<particle_num;j++){
+					floater[j]=floater[j+1];
+				}
+				for(j=i;j<particle_num;j++){
+					for(h=0; h<particle_num; h++){
+						connect[j][h]=connect[j+1][h];
+					}
+				}
+				for(j=i;j<particle_num;j++){
+					for(h=0; h<particle_num; h++){
+						connect[h][j]=connect[h][j+1];
+					}
+				}
+				i = particle_num;
+				particle_num--;
+			}
+		}
+		
+	}
+	
+	if((sstate == GLUT_DOWN) && (nail+spring+create+destroy == FALSE)){
+		int i;
+		for(i=0; i<particle_num; i++){
+			if(v2Len(v2Sub(mouse, floater[i].p))<crad+20){
+				button = i;
+				i = particle_num;
+			}
+		}
+		
+	}
+	else{button = -1;}
+	
+	yy=glutGet(GLUT_WINDOW_HEIGHT)-yy;	
+	mouse.x = xx;
+	mouse.y = yy;
+	
+}
+
+void mouseMotion(int xx, int yy) {
+	yy=glutGet(GLUT_WINDOW_HEIGHT)-yy;	
+	mouse.x = xx;
+	mouse.y = yy;
+}
+
 void reshape(int width, int height)
 {
     glViewport(0, 0, width, height);
-		glMatrixMode(GL_PROJECTION);
+	glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0, width, 0, height);
     glMatrixMode(GL_MODELVIEW);
@@ -286,22 +426,22 @@ void idle(void)
 
 int main(int argc, char **argv)
 {
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-  glutInitWindowSize(sc_width, sc_height);
-  glutCreateWindow("Pivots");
-	
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+	glutInitWindowSize(sc_width, sc_height);
+	glutCreateWindow("Pivots");
+		
 	init(argc, argv);
 	
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
 
 	glutDisplayFunc(display);
-  glutReshapeFunc(reshape);
+	glutReshapeFunc(reshape);
 	glutPostRedisplay();
 	
 	glutTimerFunc(TIMERMSECS, calc, 0);
 	
-  glutMainLoop();
-  return EXIT_SUCCESS;
+	glutMainLoop();
+	return EXIT_SUCCESS;
 }

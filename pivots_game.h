@@ -1,4 +1,4 @@
-#include "game_obj.h"
+#include "./common/game_obj.h"
 
 
 class pivots_game

@@ -1,0 +1,27 @@
+change the way the way the game logic works.
+Create a new structure for the level, put all the info about the level in the class and all functions that act on it not related to the game logic.
+Example:
+pv_gm_logic
+	public:
+		render
+		keyboard
+		keyboard
+		mouse
+		load_level
+	pivate
+		pv_lvl lvl;
+		request_pivot
+		request_move
+		pick_drop
+
+pv_lvl
+	start
+	end
+	cursor
+	line_num
+	line[50]
+	pivot_num
+	pivot[50]
+	turn
+	
+Game logic will handle keyboard input, etc.  like the pveditor does now.  

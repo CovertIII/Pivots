@@ -29,14 +29,14 @@ If your adventurous try making you own levels!  Here's a sample level file with 
 billy     // author of the level, don't include spaces
 9 9       // width and height of the level
 3 4       // location of the starting point
-8 8 			// location of the end point
-2 				// number of pivots
-9 5 1 		// location of pivot, the third number is its direction  
-3 5 1 		// another pivot
-3					// number of lines
+8 8       // location of the end point
+2         // number of pivots
+9 5 1     // location of pivot, the third number is its direction  
+3 5 1     // another pivot
+3         // number of lines
 9 3 9 6   // location of start and end point of the line
 7 3 5 3   // another line
-3 3 3 6		// another line
+3 3 3 6	  // another line
 
 When you make a level don't include the comments.  Look at the levels directory for more examples of levels
 
