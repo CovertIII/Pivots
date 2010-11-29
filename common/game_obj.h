@@ -18,3 +18,16 @@ class LINE {
 				{return 0;}
 		}
 };
+
+struct pv_lvl 
+{
+	char lvl_author[25];
+	v2i bound;
+	v2i start;
+	v2i end;
+	CURSOR cursor;
+	int pivot_num;
+	PIVOT pivot[100];
+	int line_num;
+	LINE line[100];
+};
