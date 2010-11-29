@@ -1,9 +1,0 @@
-calc	main.cpp	/^void calc(int value)$/
-circle	main.cpp	/^void circle(float pos_x, float pos_y, float size) /
-init	main.cpp	/^void init(int argc, char **argv)$/
-load_file	pivots_game.cpp	/^bool pivots_game::load_file(char *location) $/
-render	main.cpp	/^void render(void)$/
-renderBitmapString	main.cpp	/^void renderBitmapString(float x, float y, void *fo/
-request_move_cursor	pivots_game.cpp	/^int pivots_game::request_move_cursor(int _x, int _/
-request_pivot	pivots_game.cpp	/^int pivots_game::request_pivot(int dir)$/
-square	main.cpp	/^void square(int x, int y, float scale){$/
