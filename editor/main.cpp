@@ -34,7 +34,9 @@ void calc(int value)
 
 void display(void) 
 {
-	editor.render();
+	int now = glutGet(GLUT_ELAPSED_TIME);
+	
+	editor.render(now);
 }
 
 void processNormalKeys(unsigned char key, int xx, int yy) {
@@ -43,7 +45,7 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 
 
 void pressKey(int key, int xx, int yy) {
-	editor.special_keys(key, xx, yy);	
+	//editor.special_keys(key, xx, yy);	
 }
 
 
@@ -51,14 +53,14 @@ void mouseButton(int bbutton, int sstate, int xx, int yy){
 	yy=glutGet(GLUT_WINDOW_HEIGHT)-yy;	
 	mouse.x = xx;
 	mouse.y = yy;
-	editor.mouse_button(bbutton, sstate, xx, yy);	
+	//editor.mouse_button(bbutton, sstate, xx, yy);	
 }
 
 void mouseMotion(int xx, int yy) {
 	yy=glutGet(GLUT_WINDOW_HEIGHT)-yy;	
 	mouse.x = xx;
 	mouse.y = yy;
-	editor.mouse_motion(xx, yy);
+	//editor.mouse_motion(xx, yy);
 }
 
 void reshape(int width, int height)

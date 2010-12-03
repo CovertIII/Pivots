@@ -11,7 +11,7 @@ public:
 	void special_keys(int key, int xx, int yy);
 	void mouse_button(int bbutton, int sstate, int xx, int yy);
 	void mouse_motion(int xx, int yy);
-	void render();
+	void render(int now);
 	
 protected:
 	pv_lvl start;
@@ -20,6 +20,12 @@ protected:
 	int mode;
 	int cbuf_num;
 	char command_buf[255];
+	char command_his[500][255];
+	int cmd_his_num;
+	int cmd_his_cur;
 	char message_buf[255];
+	void command_key(unsigned char key);
+	void command_specialkeys(int key);
+	void sort_commands(void);
 	v2i mouse;
 };
